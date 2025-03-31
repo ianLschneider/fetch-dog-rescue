@@ -91,15 +91,15 @@ interface ResultObject{
 }
 
 
-export async function fetchDogIds(direction: string, from: number, size: number): Promise<ResultObject | null > {
+export async function fetchDogIds(url: string): Promise<ResultObject | null > {
 
-  const data= await fetchData(`https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&size=${size}&from=${from}`)
+  const data= await fetchData(url)
 
   if(data.status){
     return {
       status: data.status,
       payload: {
-        resultIds: []
+        resultIds: [],
       }
     }
   }
@@ -110,12 +110,28 @@ export async function fetchDogIds(direction: string, from: number, size: number)
   
 }
 
-export async function fetchDogIdsByBreeds(breeds: string[], direction: string, from: number, size: number): Promise<ResultObject | null > {
-  console.log("breeds!",breeds)
-  const breedParam = breeds.map( breed => `breeds=${breed}` ).join('&')
+// export async function fetchDogIds(direction: string, from: number, size: number): Promise<ResultObject | null > {
 
-  console.log("breedParam",breedParam)
-  console.log("breeds",breeds)
+//   const data= await fetchData(`https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&size=${size}&from=${from}`)
+
+//   if(data.status){
+//     return {
+//       status: data.status,
+//       payload: {
+//         resultIds: [],
+//       }
+//     }
+//   }
+//   return {
+//     status: 200,
+//     payload: {...data}
+//   }
+  
+// }
+
+export async function fetchDogIdsByBreeds(breeds: string[], direction: string, from: number, size: number): Promise<ResultObject | null > {
+
+  const breedParam = breeds.map( breed => `breeds=${breed}` ).join('&')
 
   const data= await fetchData(`https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&from=${from}&size=${size}&${breedParam}`)
 
