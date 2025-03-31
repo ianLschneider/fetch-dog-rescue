@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useState } from "react";
 
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 
 import { Dog } from "../interfaces/DogInterfaces";
 
@@ -45,12 +45,17 @@ function DogPage() {
 
               <span>·</span>
 
-              <span>breed: {dogInfo[0].zip_code}</span>
+              <span>breed: {dogInfo[0].breed}</span>
 
               <span>·</span>
 
-              <span>Location: {dogInfo[0].zip_code}</span>
-
+              <span>Location: <Link 
+                                to={`https://duckduckgo.com/?q=${dogInfo[0].zip_code}&ia=maps&iaxm=maps`} 
+                                target="_blank" rel="noopener"
+                                className="underline underline-offset-3">
+                                {dogInfo[0].zip_code}
+                              </Link>
+              </span>
           </div>
           
           </>
