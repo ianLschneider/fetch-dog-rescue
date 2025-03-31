@@ -1,11 +1,30 @@
 import { Link } from "react-router"
 import { Dog } from "../../interfaces/DogInterfaces"
+import { useState } from "react"
 
 interface Props{
     dogInfo: Dog
+    disabled: boolean
+    maxFavorites: number
+    isFavorite: boolean
+    favorite: (dog: Dog)=>void
+    unFavorite: (dog: Dog)=>void
 }
 
 function DogCard(props: Props){
+
+    // const [isFavorite, setIsFavorite] = useState<boolean>(false)
+
+    const setAsFavorite = ()=>{
+        // setIsFavorite(true)
+        props.favorite(props.dogInfo)
+    }
+
+    const unFavorite = ()=>{
+        // setIsFavorite(false)
+        props.unFavorite(props.dogInfo)
+    }
+
     return (
         <div className="flex flex-col w-full  min-h-[320px] outline-1 outline-gray-200 rounded-md overflow-hidden bg-white">
 
@@ -15,28 +34,56 @@ function DogCard(props: Props){
 
             </div>
 
-            <div className="flex flex-col items-center md:items-start px-4 pt-2 pb-3">    
-                
-                <span className="text-2xl font-medium">{props.dogInfo.name}</span>
-                {/* <Link to={`/Dog/${props.dogInfo.id}`}>{props.dogInfo.name}</Link> */}
-                <span className="flex gap-2 font-medium text-gray-600 dark:text-gray-400">
+            <div className="flex items-center justify-between">    
+                <div className="flex flex-col items-center md:items-start px-4 pt-2 pb-3">
 
-                    <span>{props.dogInfo.breed}</span>
+                    <span className="text-2xl font-medium">{props.dogInfo.name}</span>
 
-                    <span>·</span>
+                    <span className="flex gap-2 font-medium text-gray-600 dark:text-gray-400">
 
-                    <span>{props.dogInfo.age}</span>
+                        <span>{props.dogInfo.breed}</span>
 
-                </span>
-                <span className="flex gap-2 font-medium text-gray-600 dark:text-gray-400">
-                    located in: 
-                    <Link 
-                    to={`https://duckduckgo.com/?q=${props.dogInfo.zip_code}&ia=maps&iaxm=maps`} 
-                    target="_blank" rel="noopener">
-                    {props.dogInfo.zip_code}
-                    </Link>
-                </span>
-                
+                        <span>·</span>
+
+                        <span>{props.dogInfo.age}</span>
+
+                    </span>
+                    <span className="flex gap-2 font-medium text-gray-600 dark:text-gray-400">
+                        located in: 
+                        <Link 
+                        to={`https://duckduckgo.com/?q=${props.dogInfo.zip_code}&ia=maps&iaxm=maps`} 
+                        target="_blank" rel="noopener">
+                        {props.dogInfo.zip_code}
+                        </Link>
+                    </span>
+                </div>
+                <div className="pr-5 text-size-xl">
+                    {!props.isFavorite ?
+                        
+                        <button
+                        type="button"
+                        className="bg-white text-3xl"
+                        title={props.disabled ? `Only ${props.maxFavorites} dogs allowed in favorites list` : "Add to Favorites"}
+                        aria-label="Add to Favorites"
+                        disabled={props.disabled}
+                        onClick={setAsFavorite}>
+                            ☆
+                        </button>
+
+                        :
+
+                        <button
+                        type="button"
+                        className="bg-white text-xl mt-[4px] mr-[3px]"
+                        title="Remove from Favorites"
+                        aria-label="Remove from Favorites"
+                        // disabled={props.disabled}
+                        onClick={unFavorite}>
+                            ⭐️
+                        </button>
+
+                    }
+                </div>
 
             </div>
 

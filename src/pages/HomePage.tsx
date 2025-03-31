@@ -2,8 +2,6 @@ import { useCallback, useEffect, useState } from "react"
 import { useAuth } from "../context/AuthContext"
 import { useNavigate } from "react-router"
 
-import { dogs, favoriteDogs, breeds} from "../temp-data/tempData.ts"
-
 import DogList from "../components/ui/DogList"
 import FavoriteDogsList from "../components/ui/FavoriteDogsList"
 
@@ -13,7 +11,7 @@ import Pagination from "../components/ui/Pagination"
 import { Dog } from "../interfaces/DogInterfaces"
 import { PaginationInfo, PaginaitonSettings } from "../interfaces/PaginationInfo"
 
-import {fetchDogs, fetchDogBreeds, fetchDogIds, fetchDogIdsByBreeds} from '../api/fetchDogs'
+import {fetchTheDogs, fetchDogBreeds, fetchDogIds, fetchDogIdsByBreeds, fetchMatch} from '../api/fetchDogs'
 
 import unauthorizeUser from '../api/logout'
 
@@ -23,7 +21,6 @@ function HomePage() {
   
   const navigate = useNavigate()
   
-
   const [paginationSettings] = useState<PaginaitonSettings>({
     limit: 25,
     position: 0,
@@ -38,44 +35,14 @@ function HomePage() {
   const [dogList, setDogList] = useState<Dog[] | null>([])
 
   const [dogBreeds, setDogbreeds] = useState<string[]>([])
-  
   const [currentBreeds, setCurrentBreeds] = useState<string[]>([])
+
+  const [favoriteDogs, setFavoritedDogs] = useState<Dog[]>([])
+  const [disableFavorites, setDisableFavorites] = useState<boolean>(false)
 
   const [currentSortDirection, setCurrentSortDirection] = useState<string>("asc")
 
-  const handleLogout = async () => {
-    await unauthorizeUser()
-    logout()
-    navigate("/login", { replace: true })
-  }
-  
-
-  const handleSort = (direction: string) => {
-    setCurrentSortDirection(direction)
-  }
-
-  const handleSelect = (values: string[]) => {
-
-    setCurrentSortDirection("asc")
-
-    if(values.includes('all')){
-      // setCurrentBreeds([])
-      // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
-    }else{
-      setCurrentBreeds(values)
-      // listDogsByBreeds(values, currentSortDirection, paginationInfo.position * paginationInfo.limit)
-    }
-    
-  }
-
-
-
-  const handlePaginationChange = (value: string) => {
-    console.log("value: ",value)
-    const to = paginationInfo[value]
-    console.log("to:",to)
-    // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
-  }
+  const MAX_FAVORITE_DOGS = 100
 
   const getDogsBreeds = useCallback( async () => {
 
@@ -101,51 +68,7 @@ function HomePage() {
  
   }, [ setDogbreeds, logout ])
 
-
-//   const listDogs = useCallback( async ( direction: string, from: number) => {
-     
-//     const response = await fetchDogIds(direction, from, 25)
-   
-//    if(response){
- 
-//       if(response.status !== 401){
- 
-//         const thelist = await fetchDogs(response.payload.resultIds)
- 
-//         setDogList(thelist)
-
-//         // console.log(response.payload)
-
-//         // setPaginationInfo(prev => ({
-//         //   ...prev,
-//         //   ['total']: 100,
-//         // }))
-
-// //        console.log(paginationInfo.total)
-
-//         /* setPaginationInfo(prev => ({
-//           ...prev,
-//           ["total"]: response.payload.total ? response.payload.total : 0,
-//           ["last"]: response.payload.total ? response.payload.total / prev.limit : null,
-//           ["next"]: response.payload.next ?  response.payload.next: null,
-//           ["previous"]: response.payload.previous ? response.payload.previous: null,
-//         }))*/
-//         //  updatePaginationInfo()
-//       }else{
- 
-//         logout()
- 
-//       }
-
-//     }else{
- 
-//       console.log("ERROR getting available Dogs ")
- 
-//     }
-
-//   }, [ setDogList, logout ])
-
-
+  
   const listDogsByBreeds = useCallback( async (breeds: string[], direction: string, from: number) => {
   
    const response = await fetchDogIdsByBreeds(breeds, direction, from, paginationInfo.limit)
@@ -154,7 +77,7 @@ function HomePage() {
  
       if(response.status !== 401){
  
-        const thelist = await fetchDogs(response.payload.resultIds)
+        const thelist = await fetchTheDogs(response.payload.resultIds)
  
         setDogList(thelist)
  
@@ -180,8 +103,37 @@ function HomePage() {
 
   }, [ setDogList, logout ])
 
+  const getMatch = async ()=>{
+    //fetch match based off list 
 
-    
+    const ids = favoriteDogs.map(d => d.id)
+
+    const response = await fetchMatch(ids)
+ 
+    if(response){
+ 
+      if(response.status !== 401){
+        
+        if(response){
+          const m = await response.payload.match
+
+          navigate(`/your-match/${m.match}`)
+        }
+
+      }else{
+ 
+        logout()
+
+      }
+
+    }else{
+ 
+      console.log("ERROR getting available Dogs ")
+ 
+    }
+
+  }
+  
   const listDogs = useCallback( async ( direction: string, size: number, from: number, breeds?: []) => {
      
     const url = (!breeds ? `https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&size=${size}&from=${from}` :
@@ -193,7 +145,7 @@ function HomePage() {
  
       if(response.status !== 401){
  
-        const thelist = await fetchDogs(response.payload.resultIds)
+        const thelist = await fetchTheDogs(response.payload.resultIds)
  
         setDogList(thelist)
 
@@ -221,6 +173,65 @@ function HomePage() {
   }, [ setDogList, logout ])
 
 
+  
+  const handleLogout = async () => {
+    await unauthorizeUser()
+    logout()
+    navigate("/login", { replace: true })
+  }
+  
+
+
+  const handleSort = (direction: string) => {
+    setCurrentSortDirection(direction)
+  }
+
+  const handleSelect = (values: string[]) => {
+
+    setCurrentSortDirection("asc")
+
+    if(values.includes('all')){
+      // setCurrentBreeds([])
+      // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
+    }else{
+      // setCurrentBreeds(values)
+      // listDogsByBreeds(values, currentSortDirection, paginationInfo.position * paginationInfo.limit)
+    }
+    
+  }
+
+  const handlePaginationChange = (value: string) => {
+    const to = paginationInfo[value]
+    // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
+  }
+
+
+  const handleAddToFavorites = (dog: Dog) => {
+    setFavoritedDogs([
+      dog,
+      ...favoriteDogs
+    ]);
+
+    if(favoriteDogs.length === MAX_FAVORITE_DOGS - 1){
+      setDisableFavorites(true)
+    }
+  }
+
+  const handleRemoveFromFavorites = (dog: Dog) => {
+    setFavoritedDogs(
+      favoriteDogs.filter(fId =>
+        fId.id !== dog.id
+      )
+    )
+    // console.log(dogList)
+    if(favoriteDogs.length === MAX_FAVORITE_DOGS)setDisableFavorites(false)
+  }
+
+
+  const handleSubmitFavorites = ()=>{
+    getMatch()
+  }
+
 
   useEffect( ()=>{
 
@@ -234,14 +245,13 @@ function HomePage() {
     if(!currentBreeds.length){
       // const pos = paginationInfo.position * paginationInfo.limit
       // listDogs( currentSortDirection, pos)
-
       listDogs( currentSortDirection, paginationSettings.limit, paginationSettings.position)
     }else{
-      // listDogsByBreeds(currentBreeds, currentSortDirection, paginationInfo.position * paginationInfo.limit)
+      listDogsByBreeds(currentBreeds, currentSortDirection, paginationInfo.position * paginationInfo.limit)
     }
       
 
-  }, [ listDogs, listDogsByBreeds, currentSortDirection, currentBreeds])
+  }, [ listDogs, listDogsByBreeds, currentSortDirection, currentBreeds, paginationSettings])
 
   return (
 
@@ -249,20 +259,27 @@ function HomePage() {
  
           <button onClick={handleLogout}>Logout</button>
  
-          <div className="flex flex-row flex-wrap py-4">             
+          <div className="flex flex-col-reverse sm:flex-row flex-wrap py-4">             
  
-              <main role="main" className="w-full sm:w-2/3 md:w-3/4 p-10 bg-gray-100 rounded-xl border-1 border-gray-200">
+              <main role="main" className="w-full mt-[20px] sm:mt-0 sm:w-2/3 md:w-3/4 p-10 bg-gray-100 rounded-xl border-1 border-gray-200">
 
-                <h2 className="text-[60px] font-semibold">Available Dogs</h2>
+                <h2 className="text-[40px]/[42px] lg:text-[60px]/[62px] font-semibold mb-[20px]">Available Dogs</h2>
 
                 <SortBar breeds={dogBreeds} handleSort={handleSort} handleSelectChange={handleSelect}/>
 
-                { dogList &&  <DogList styles="flex flex-col lg:grid grid-cols-3 gap-x-5 gap-y-7" dogs={dogList} /> }
+                { dogList &&  
+                  <DogList styles="flex flex-col lg:grid grid-cols-3 gap-x-5 gap-y-7" 
+                  dogs={dogList}
+                  favoriteDogs={favoriteDogs}
+                  disableFavorites={disableFavorites}
+                  maxFavorites={MAX_FAVORITE_DOGS}
+                  favorite={handleAddToFavorites} 
+                  unFavorite={handleRemoveFromFavorites} /> }
 
                 {paginationInfo.total &&
                   <Pagination 
                   isFirst={paginationSettings.position < 1} 
-                  isLast={ paginationInfo.total - paginationSettings.limit * paginationSettings.position === 0 } 
+                  isLast={paginationInfo.total - paginationSettings.limit * paginationSettings.position === 0} 
                   handleNavigate={handlePaginationChange} />
                 }
 
@@ -270,10 +287,22 @@ function HomePage() {
  
               <aside className="w-full sm:w-1/3 md:w-1/4 px-5">
  
-                  <div className="sticky top-5 p-4 w-full bg-gray-100 px-5 py-10 rounded-xl outline-1 outline-gray-200">
+                  <div className="sticky min-h-[200px] top-5 p-4 w-full bg-gray-100 px-5 py-5 rounded-xl outline-1 outline-gray-200 text-center">
+                    <h3 className="font-bold">Favorites</h3>
+                    <small>Select up to 100</small>
+                    {favoriteDogs.length > 0 &&
+                      <>
+                      <button 
+                        type="button" 
+                        title="Submit Favorites" 
+                        aria-label="Submit Favorites" 
+                        className="w-full bg-indigo-700 text-white rounded-full py-2 mt-2 mb-4"
+                        onClick={handleSubmitFavorites}>Submit Favorites</button>
 
-                      <FavoriteDogsList dogs={favoriteDogs} />
-
+                      <FavoriteDogsList dogs={favoriteDogs} remove={handleRemoveFromFavorites}/>
+                      </>
+                    }
+                   
                   </div>
 
               </aside>

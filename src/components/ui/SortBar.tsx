@@ -29,25 +29,25 @@ function SortBar(props: Props){
         }
 
     return (
-        <div className="flex flex-row justify-end items-center gap-x-2 pb-4">
-            
-            <span className="mr-2">Sort: </span>
-                     
-            <button type="button" className="font-(family-name:--font-button) px-5 py-3 cursor-pointer border-1 border-gray-200 rounded-sm bg-neutral-50 disabled:opacity-50" onClick={handleSortDirectionAscending} aria-label="Ascending" title="Ascending" disabled={sortDirection === ASC}>
-                <span className="scale-x-104 -scale-y-[45%] inline-block font-semibold">V</span>
-            </button>
-            
-            <button type="button" className="font-(family-name:--font-button) px-5 py-3 cursor-pointer border-1 border-gray-200 rounded-sm bg-neutral-50 disabled:opacity-50" onClick={handleSortDirectionDescending} aria-label="Descending" title="Descending" disabled={sortDirection === DESC}>
-                <span className="scale-x-104 scale-y-[45%] inline-block font-semibold">V</span>
-            </button>
- 
+        <div className="flex flex-col md:flex-row justify-end items-center gap-x-2 pb-4">
+            <div className="flex gap-x-2 items-center mb-[20px]">
+                <span className="mr-2">Sort: </span>
+                        
+                <button type="button" className="font-(family-name:--font-button) px-5 py-3 border-1 border-gray-200 rounded-sm bg-neutral-50 disabled:opacity-50" onClick={handleSortDirectionAscending} aria-label="Ascending" title="Ascending" disabled={sortDirection === ASC}>
+                    <span className="scale-x-104 -scale-y-[45%] inline-block font-semibold">V</span>
+                </button>
+                
+                <button type="button" className="font-(family-name:--font-button) px-5 py-3 border-1 border-gray-200 rounded-sm bg-neutral-50 disabled:opacity-50" onClick={handleSortDirectionDescending} aria-label="Descending" title="Descending" disabled={sortDirection === DESC}>
+                    <span className="scale-x-104 scale-y-[45%] inline-block font-semibold">V</span>
+                </button>
+            </div>
             <form>
                 <select name="breeds" id="breeds" className="ml-5 text-center border-1 border-gray-200 p-4 rounded-sm bg-neutral-50" onChange={handleChange} multiple>
 
                     <option value="all">All breeds</option>
 
                     {
-                        props.breeds.map((breed, index) => <option className="pt-3" value={breed} key={index}>{breed}</option>)
+                        props.breeds.map((breed, index) => <option className="px-4 py-1" value={breed} key={index}>{breed}</option>)
                     }
                     
                 </select>

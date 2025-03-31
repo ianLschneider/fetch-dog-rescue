@@ -19,6 +19,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+button{
+  cursor: pointer; 
+}
+button:disabled{
+  opacity: 0.35;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
@@ -26,8 +32,5 @@
   }
   a:hover {
     color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
   }
 }

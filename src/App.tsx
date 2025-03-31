@@ -25,7 +25,7 @@ function App() {
           </Route>
 
           <Route element={<PrivateRoute />}>
-            <Route path="/dog/:id" element={<Dog />} />
+            <Route path="/your-match/:id" element={<Dog />} />
           </Route>
           
           <Route path="*" element={<Error404 />} />
