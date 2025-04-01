@@ -45,7 +45,7 @@ function HomePage() {
 
   const [currentSortDirection, setCurrentSortDirection] = useState<string>("asc")
 
-  const MAX_FAVORITE_DOGS = 2
+  const MAX_FAVORITE_DOGS = 100
   const BASE_URL = 'https://frontend-take-home-service.fetch.com'
 
 

@@ -13,15 +13,11 @@ interface Props{
 
 function DogCard(props: Props){
 
-    // const [isFavorite, setIsFavorite] = useState<boolean>(false)
-
     const setAsFavorite = ()=>{
-        // setIsFavorite(true)
         props.favorite(props.dogInfo)
     }
 
     const unFavorite = ()=>{
-        // setIsFavorite(false)
         props.unFavorite(props.dogInfo)
     }
 

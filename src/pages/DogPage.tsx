@@ -30,38 +30,38 @@ function DogPage() {
 
   return (
     <div>
-      <header className="my-[10px]">
+      <header>
         <BackHomeButton />
       </header>
-      <main className="w-full p-10 bg-gray-100 rounded-xl border-1 border-gray-200 text-center">
-        {dogInfo.length > 0 &&
-          <>
-          <h2 className="text-5xl font-bold mt-[20px]">Your Match Is {dogInfo[0].name}!</h2>
-          <img className="w-full h-auto max-w-[600px] my-[30px] mx-auto" src={dogInfo[0].img} alt={`picture of ${dogInfo[0].name}`} />
+        <main className="w-full p-10 mt-4 bg-gray-100 rounded-xl border-1 border-gray-200 text-center">
+          {dogInfo.length > 0 &&
+            <>
+            <h2 className="text-5xl font-bold mt-[20px]">Your Match Is {dogInfo[0].name}!</h2>
+            <img className="w-full h-auto max-w-[600px] my-[30px] mx-auto" src={dogInfo[0].img} alt={`picture of ${dogInfo[0].name}`} />
 
-          <div className="flex gap-2 justify-center font-medium text-stone-900 dark:text-gray-400">
+            <div className="flex gap-2 justify-center font-medium text-stone-900 dark:text-gray-400">
 
-              <span>Age: {dogInfo[0].age}</span>
+                <span>Age: {dogInfo[0].age}</span>
 
-              <span>·</span>
+                <span>·</span>
 
-              <span>breed: {dogInfo[0].breed}</span>
+                <span>breed: {dogInfo[0].breed}</span>
 
-              <span>·</span>
+                <span>·</span>
 
-              <span>Location: <Link 
-                                to={`https://duckduckgo.com/?q=${dogInfo[0].zip_code}&ia=maps&iaxm=maps`} 
-                                target="_blank" rel="noopener"
-                                className="underline underline-offset-3">
-                                {dogInfo[0].zip_code}
-                              </Link>
-              </span>
-          </div>
+                <span>Location: <Link 
+                                  to={`https://duckduckgo.com/?q=${dogInfo[0].zip_code}&ia=maps&iaxm=maps`} 
+                                  target="_blank" rel="noopener"
+                                  className="underline underline-offset-3">
+                                  {dogInfo[0].zip_code}
+                                </Link>
+                </span>
+            </div>
+            
+            </>
+          }
           
-          </>
-        }
-        
-      </main>
+        </main>
       <footer></footer>
     </div>
   )

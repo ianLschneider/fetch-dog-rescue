@@ -44,9 +44,8 @@ const LoginPage = () => {
     }
 
     return (
-        <section className="tw-login--container">
-        <div className="tw-login">
-            <h2>Login</h2>
+        <section className="login--container">
+        <div className="login">
             <form onSubmit={handleSubmit}>
                 <label>
                     Name:
@@ -72,12 +71,10 @@ const LoginPage = () => {
                         required />
                 </label>
                 
-                {errorMessage ?
-                    <h5 className='errorMsg'>{errorMessage}</h5>
-                    :
-                    null
-                }
-                <input type="Submit" value="Log In" readOnly />
+                <h5 className='errorMsg min-h-[30px]'>{errorMessage}</h5>
+
+                <input type="Submit" value="Log in" readOnly />
+
             </form>
         </div>
 </section>
