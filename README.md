@@ -4,7 +4,7 @@
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 ### Produciton URL: 
-https://fetch-dog-rescure.netlify.com/
+https://fetch-dog-rescure.netlify.app/
 
 ## Instalation
 - Fork via CLI or GUI: https://github.com/ianLschneider/fetch-dog-rescue
