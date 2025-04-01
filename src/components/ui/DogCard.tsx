@@ -1,11 +1,12 @@
 import { Link } from "react-router"
 import { Dog } from "../../interfaces/DogInterfaces"
+import { useState,useEffect } from "react"
 
 interface Props{
     dogInfo: Dog
     disabled: boolean
     maxFavorites: number
-    isFavorite: boolean
+    favorites: Dog[]
     favorite: (dog: Dog)=>void
     unFavorite: (dog: Dog)=>void
 }
@@ -19,6 +20,17 @@ function DogCard(props: Props){
     const unFavorite = ()=>{
         props.unFavorite(props.dogInfo)
     }
+
+    const [isFavorite, setIsFavorite] = useState<boolean>(false)
+
+    useEffect(()=>{
+        const favs = props.favorites.filter((el)=>el.id === props.dogInfo.id )
+        if(favs.length){
+            setIsFavorite(true)
+        }else{
+            setIsFavorite(false)    
+        }
+    },[setIsFavorite, props])
 
     return (
         <div className="flex flex-col w-full  min-h-[320px] outline-1 outline-gray-200 rounded-md overflow-hidden bg-white">
@@ -53,8 +65,8 @@ function DogCard(props: Props){
                     </span>
                 </div>
                 <div className="pr-5 text-size-xl">
-                    {!props.isFavorite ?
-                        
+                    {/* {!props.isFavorite ? */}
+                    {!isFavorite ?
                         <button
                         type="button"
                         className="bg-white text-3xl"
