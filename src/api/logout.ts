@@ -1,5 +1,3 @@
-import { User } from '../interfaces/User'
-
 export default async function unauthorizeUser(): Promise<boolean | null>{
     try {
 

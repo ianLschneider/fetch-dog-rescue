@@ -1,6 +1,5 @@
 import { Link } from "react-router"
 import { Dog } from "../../interfaces/DogInterfaces"
-import { useState } from "react"
 
 interface Props{
     dogInfo: Dog
