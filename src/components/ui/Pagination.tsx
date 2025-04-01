@@ -12,14 +12,10 @@ function Pagination(props: Props){
         if(!(event.target instanceof HTMLButtonElement))return
         if(event.target.dataset.name)props.handleNavigate(event.target.dataset.name)
     }
-
-    const isFirst = () => props.isFirst ? 'opacity-50' : ''
-    const isLast = () => props.isLast ? 'opacity-50' : ''
-
     return(
         <div className="flex gap-10 mt-20 justify-center align-center">
             
-            <div className={isFirst() + ' flex gap-3'}>
+            <div className="flex gap-3">
                 <button 
                 type="button"
                 title="first page" 
@@ -42,7 +38,7 @@ function Pagination(props: Props){
                 }
                 onClick={handlePaginationButtonclick}>&lt; <span className="pointer-events-none underline underline-offset-3">Previous Page</span></button>
             </div>
-            <div className={isLast() + ' flex gap-3'}>
+            <div className="flex gap-3">
                 <button type="button"
                 title="next page" 
                 aria-label="next page" 

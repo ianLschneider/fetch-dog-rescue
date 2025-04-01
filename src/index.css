@@ -24,6 +24,7 @@ button{
 }
 button:disabled{
   opacity: 0.35;
+  cursor: initial;
 }
 @media (prefers-color-scheme: light) {
   :root {

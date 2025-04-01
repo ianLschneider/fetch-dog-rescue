@@ -21,7 +21,7 @@ function HomePage() {
   
   const navigate = useNavigate()
   
-  const [paginationSettings] = useState<PaginaitonSettings>({
+  const [paginationSettings, setPaginationSettings] = useState<PaginaitonSettings>({
     limit: 25,
     position: 0,
   })
@@ -32,17 +32,23 @@ function HomePage() {
     next: '',
   })
 
+
   const [dogList, setDogList] = useState<Dog[] | null>([])
 
   const [dogBreeds, setDogbreeds] = useState<string[]>([])
-  const [currentBreeds, setCurrentBreeds] = useState<string[]>([])
+  // const [currentBreeds, setCurrentBreeds] = useState<string[]>([])
 
   const [favoriteDogs, setFavoritedDogs] = useState<Dog[]>([])
   const [disableFavorites, setDisableFavorites] = useState<boolean>(false)
 
+  const [disableSort, setDisableSort] = useState<boolean>(false)
+
   const [currentSortDirection, setCurrentSortDirection] = useState<string>("asc")
 
   const MAX_FAVORITE_DOGS = 2
+  const BASE_URL = 'https://frontend-take-home-service.fetch.com'
+
+
 
   const getDogsBreeds = useCallback( async () => {
 
@@ -68,40 +74,6 @@ function HomePage() {
  
   }, [ setDogbreeds, logout ])
 
-  
-  const listDogsByBreeds = useCallback( async (breeds: string[], direction: string, from: number) => {
-  
-   const response = await fetchDogIdsByBreeds(breeds, direction, from, paginationInfo.limit)
-   
-   if(response){
- 
-      if(response.status !== 401){
- 
-        const thelist = await fetchTheDogs(response.payload.resultIds)
- 
-        setDogList(thelist)
- 
-        // setPaginationInfo(prev => ({
-        //   ...prev,
-        //   ["total"]: response.payload.total ? response.payload.total : null,
-        //   ["last"]: response.payload.total ? response.payload.total - prev.limit : null,
-        //   ["next"]: response.payload.next ? response.payload.next : null,
-        //   ["previous"]: response.payload.previous ? response.payload.previous : null,
-        // }))
-
-      }else{
- 
-        logout()
- 
-      }
-
-    }else{
- 
-      console.log("ERROR getting available Dogs ")
- 
-    }
-
-  }, [ setDogList, logout ])
 
   const getMatch = async ()=>{
     //fetch match based off list 
@@ -134,12 +106,11 @@ function HomePage() {
 
   }
   
-  const listDogs = useCallback( async ( direction: string, size: number, from: number, breeds?: []) => {
-     
-    const url = (!breeds ? `https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&size=${size}&from=${from}` :
-    `https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&size=${size}&from=${from}&breeds=${breeds}`)
+  const listDogs = useCallback( async ( url : string ) => {
 
-    const response = await fetchDogIds(url)
+    const fURL = BASE_URL + url
+
+    const response = await fetchDogIds(fURL)
    
     if(response){
  
@@ -153,7 +124,7 @@ function HomePage() {
           {
             ...prev,
             total:  response.payload.total,
-            previous: response.payload.previous,
+            previous: response.payload.prev,
             next: response.payload.next,
           }
         ))
@@ -171,38 +142,117 @@ function HomePage() {
     }
 
   }, [ setDogList, logout ])
-
-
   
+
+
+  const listDogsByURL = useCallback( async (url: string) => {
+    console.log("listDogsByURL")
+    listDogs(url)
+  }, [ listDogs ])
+
+  const listDogsBySettings = useCallback( async (direction: string, size: number, from: number) => {
+    console.log("listDogsBySettings")
+    const url = `/dogs/search?sort=breed:${direction}&size=${size}&from=${from}`
+    listDogs(url)
+  }, [ listDogs ])
+
+  const listDogsByBreeds = useCallback( async (direction: string, size: number, from: number, breeds: string[]) => {
+    console.log("listDogsByBreeds")
+
+    const url = `/dogs/search?sort=breed:${direction}&size=${size}&from=${from}`
+   
+    const fURL = BASE_URL + url
+
+    const response = await fetchDogIdsByBreeds(fURL, breeds)
+   
+    if(response){
+ 
+      if(response.status !== 401){
+ 
+        const thelist = await fetchTheDogs(response.payload.resultIds)
+ 
+        setDogList(thelist)
+
+        setPaginaitonInfo( prev => (
+          {
+            ...prev,
+            total:  response.payload.total,
+            previous: response.payload.prev,
+            next: response.payload.next,
+          }
+        ))
+
+      }else{
+ 
+        logout()
+ 
+      }
+
+    }else{
+ 
+      console.log("ERROR getting available Dogs ")
+ 
+    }
+  }, [ setDogList, logout ])
+
+
+
   const handleLogout = async () => {
     await unauthorizeUser()
     logout()
     navigate("/login", { replace: true })
   }
   
-
-
   const handleSort = (direction: string) => {
     setCurrentSortDirection(direction)
+      
+    listDogsBySettings(direction, paginationSettings.limit, paginationSettings.position)
+
   }
 
-  const handleSelect = (values: string[]) => {
-
-    setCurrentSortDirection("asc")
+  const handleSelect = (values: string[]) => { 
 
     if(values.includes('all')){
-      // setCurrentBreeds([])
-      //listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
+      setDisableSort(false)
+      listDogsBySettings(currentSortDirection, paginationSettings.limit, 0)
     }else{
-      // setCurrentBreeds(values)
-      // listDogsByBreeds(values, currentSortDirection, paginationInfo.position * paginationInfo.limit)
+      setDisableSort(true)
+      listDogsByBreeds(currentSortDirection, paginationSettings.limit, paginationSettings.position, values)
     }
     
   }
 
   const handlePaginationChange = (value: string) => {
-    const to = paginationInfo[value]
-    // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
+
+    let pos = paginationSettings.position
+
+    switch(value){
+
+      case 'previous': 
+        pos--
+        listDogs( paginationInfo[value] )
+        break;
+      case 'next':
+        pos++
+        listDogs( paginationInfo[value] )
+        break;
+      case 'first':
+        pos = 0
+        listDogsBySettings( currentSortDirection, paginationSettings.limit, pos )
+        break;
+
+      case 'last':
+        pos = paginationInfo.total - paginationSettings.limit
+        listDogsBySettings( currentSortDirection, paginationSettings.limit, pos )
+        break;
+    }
+
+    setPaginationSettings(prev =>(
+      {
+        ...prev,
+        ['position']: pos
+      }
+    ))
   }
 
 
@@ -239,19 +289,9 @@ function HomePage() {
 
   }, [ getDogsBreeds ])
 
-  // const pos = paginationInfo.position * paginationInfo.limit
   useEffect( ()=>{
-
-    if(!currentBreeds.length){
-      // const pos = paginationInfo.position * paginationInfo.limit
-      // listDogs( currentSortDirection, pos)
-       listDogs( currentSortDirection, paginationSettings.limit, paginationSettings.position)
-    }else{
-      // listDogsByBreeds(currentBreeds, currentSortDirection, paginationInfo.position * paginationInfo.limit)
-    }
-      
-
-  }, [ listDogs, listDogsByBreeds, currentSortDirection, currentBreeds, paginationSettings])
+    listDogsByURL('/dogs/search?sort=breed:asc&size=25&from=0')
+  }, [ listDogsByURL ])
 
   return (
 
@@ -265,7 +305,7 @@ function HomePage() {
 
                 <h2 className="text-[40px]/[42px] lg:text-[60px]/[62px] font-semibold mb-[20px]">Available Dogs</h2>
 
-                <SortBar breeds={dogBreeds} handleSort={handleSort} handleSelectChange={handleSelect}/>
+                <SortBar breeds={dogBreeds} buttonsDisabled={disableSort} handleSort={handleSort} handleSelectChange={handleSelect}/>
 
                 { dogList &&  
                   <DogList styles="flex flex-col lg:grid grid-cols-3 gap-x-5 gap-y-7" 
@@ -279,7 +319,7 @@ function HomePage() {
                 {paginationInfo.total &&
                   <Pagination 
                   isFirst={paginationSettings.position < 1} 
-                  isLast={paginationInfo.total - paginationSettings.limit * paginationSettings.position === 0} 
+                  isLast={paginationInfo.total - paginationSettings.limit === paginationSettings.position} 
                   handleNavigate={handlePaginationChange} />
                 }
 
@@ -289,7 +329,7 @@ function HomePage() {
  
                   <div className="sticky min-h-[200px] top-5 p-4 w-full bg-gray-100 px-5 py-5 rounded-xl outline-1 outline-gray-200 text-center">
                     <h3 className="font-bold">Favorites</h3>
-                    <small>Select up to {MAX_FAVORITE_DOGS}</small>
+                    <small>Favorite up to {MAX_FAVORITE_DOGS} dogs to find your match</small>
                     {favoriteDogs.length > 0 &&
                       <>
                       <button 

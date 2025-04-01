@@ -1,5 +1,35 @@
 import { Dog } from "../interfaces/DogInterfaces";
 
+interface DogBreedObject{
+  status: number
+  payload: {
+    breeds: string[]
+  }
+}
+
+interface FetchResult{
+  resultIds: string[]
+  total?: number
+  next?: string
+  prev?: string
+}
+
+interface ResultObject{
+  status: number
+  payload: FetchResult
+}
+
+interface Match{
+  match: string
+}
+
+interface MatchObject{
+  status: number
+  payload: {
+    match: Promise<Match>
+  }
+}
+
 const fetchData = async ( url: string ) => {
 
   try {
@@ -24,6 +54,7 @@ const fetchData = async ( url: string ) => {
      return null
   }
 }
+
 
 export async function fetchTheDogs(ids: string[]): Promise<Dog[] | null> {
 
@@ -51,12 +82,6 @@ export async function fetchTheDogs(ids: string[]): Promise<Dog[] | null> {
 
 }
 
-interface DogBreedObject{
-  status: number
-  payload: {
-    breeds: string[]
-  }
-}
 
 export async function fetchDogBreeds(): Promise<DogBreedObject | null> {
 
@@ -74,31 +99,6 @@ export async function fetchDogBreeds(): Promise<DogBreedObject | null> {
   return {
     status: 200,
     payload: {breeds: [...data]}
-  }
-}
-
-
-interface FetchResult{
-  resultIds: string[]
-  total?: number
-  next?: string
-  previous?: string
-}
-
-interface ResultObject{
-  status: number
-  payload: FetchResult
-}
-
-
-interface Match{
-  match: string
-}
-
-interface MatchObject{
-  status: number
-  payload: {
-    match: Promise<Match>
   }
 }
 
@@ -123,11 +123,11 @@ export async function fetchDogIds(url: string): Promise<ResultObject | null > {
 }
 
 
-export async function fetchDogIdsByBreeds(breeds: string[], direction: string, from: number, size: number): Promise<ResultObject | null > {
+export async function fetchDogIdsByBreeds( url: string, breeds: string[] ): Promise<ResultObject | null > {
 
   const breedParam = breeds.map( breed => `breeds=${breed}` ).join('&')
 
-  const data= await fetchData(`https://frontend-take-home-service.fetch.com/dogs/search?sort=breed:${direction}&from=${from}&size=${size}&${breedParam}`)
+  const data= await fetchData(url + "&" + breedParam)
 
   if(data.status){
     return {
