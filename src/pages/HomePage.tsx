@@ -42,7 +42,7 @@ function HomePage() {
 
   const [currentSortDirection, setCurrentSortDirection] = useState<string>("asc")
 
-  const MAX_FAVORITE_DOGS = 100
+  const MAX_FAVORITE_DOGS = 2
 
   const getDogsBreeds = useCallback( async () => {
 
@@ -56,7 +56,7 @@ function HomePage() {
 
        }else{
   
-         logout()
+        logout()
   
        }
  
@@ -192,7 +192,7 @@ function HomePage() {
 
     if(values.includes('all')){
       // setCurrentBreeds([])
-      // listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
+      //listDogs( currentSortDirection, paginationInfo.position * paginationInfo.limit)
     }else{
       // setCurrentBreeds(values)
       // listDogsByBreeds(values, currentSortDirection, paginationInfo.position * paginationInfo.limit)
@@ -245,9 +245,9 @@ function HomePage() {
     if(!currentBreeds.length){
       // const pos = paginationInfo.position * paginationInfo.limit
       // listDogs( currentSortDirection, pos)
-      listDogs( currentSortDirection, paginationSettings.limit, paginationSettings.position)
+       listDogs( currentSortDirection, paginationSettings.limit, paginationSettings.position)
     }else{
-      listDogsByBreeds(currentBreeds, currentSortDirection, paginationInfo.position * paginationInfo.limit)
+      // listDogsByBreeds(currentBreeds, currentSortDirection, paginationInfo.position * paginationInfo.limit)
     }
       
 
@@ -289,7 +289,7 @@ function HomePage() {
  
                   <div className="sticky min-h-[200px] top-5 p-4 w-full bg-gray-100 px-5 py-5 rounded-xl outline-1 outline-gray-200 text-center">
                     <h3 className="font-bold">Favorites</h3>
-                    <small>Select up to 100</small>
+                    <small>Select up to {MAX_FAVORITE_DOGS}</small>
                     {favoriteDogs.length > 0 &&
                       <>
                       <button 
