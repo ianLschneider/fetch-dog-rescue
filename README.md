@@ -16,3 +16,9 @@ From the CLI:
 
 
 
+### Known Issues: 
+- iOS Safri not valuing auth cookie 
+  - Solution: Disable `Prevent cross-site tracking` in `Safari > Preferences > Privacy -> disable cross-site tracking settings`
+  [https://stackoverflow.com/questions/42301884/safari-not-setting-cors-cookies-using-js-fetch-api]
+
+  
